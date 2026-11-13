@@ -7,7 +7,15 @@
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
   <script src="TemplateData/profiler.js"></script>
-  </head>
+  <style id='hexcite-loading'>
+body { background:#000 !important; }
+#unity-canvas { background:#000 !important; }
+#unity-loading-bar { width:min(70vw,560px); opacity:1; transition:opacity .4s ease; z-index:10; }
+#unity-logo { width:100% !important; height:auto !important; aspect-ratio:1206/555; background:#fff url('TemplateData/yorozuya.jpg') no-repeat center / contain !important; border-radius:16px; }
+#unity-progress-bar-empty { width:60% !important; height:6px !important; margin:18px auto 0 !important; background:#333 !important; border-radius:3px; overflow:hidden; }
+#unity-progress-bar-full { height:6px !important; margin:0 !important; background:#fff !important; }
+</style>
+</head>
   <body>
     <div id="unity-container" class="unity-desktop">
       <div id="unity-fullscreen-container">
@@ -182,5 +190,19 @@
       document.body.appendChild(script);
 
     </script>
-  </body>
+  <script>
+(function () {
+  var bar = document.querySelector('#unity-loading-bar'); if (!bar) return;
+  var done = false;
+  var ob = new MutationObserver(function () {
+    if (done || bar.style.display !== 'none') return;
+    done = true; ob.disconnect();
+    bar.style.display = 'block';
+    requestAnimationFrame(function () { bar.style.opacity = '0'; });
+    setTimeout(function () { bar.style.display = 'none'; }, 450);
+  });
+  ob.observe(bar, { attributes: true, attributeFilter: ['style'] });
+})();
+</script>
+</body>
 </html>
