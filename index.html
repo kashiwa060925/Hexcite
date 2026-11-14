@@ -6,12 +6,11 @@
     <title>Unity Web Player | hexcite</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
-  <script src="TemplateData/profiler.js"></script>
   <style id='hexcite-loading'>
 body { background:#000 !important; }
 #unity-canvas { background:#000 !important; }
 #unity-loading-bar { width:min(70vw,560px); opacity:1; transition:opacity .4s ease; z-index:10; }
-#unity-logo { width:100% !important; height:auto !important; aspect-ratio:1206/555; background:#fff url('TemplateData/yorozuya.jpg') no-repeat center / contain !important; border-radius:16px; }
+#unity-logo { width:100% !important; height:auto !important; aspect-ratio:1311/603; background:transparent url('TemplateData/yorozuya.png') no-repeat center / contain !important; }
 #unity-progress-bar-empty { width:60% !important; height:6px !important; margin:18px auto 0 !important; background:#333 !important; border-radius:3px; overflow:hidden; }
 #unity-progress-bar-full { height:6px !important; margin:0 !important; background:#fff !important; }
 </style>
@@ -69,9 +68,9 @@ body { background:#000 !important; }
       var loaderUrl = buildUrl + "/hexcite-wab.loader.js";
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/hexcite-wab.data",
-        frameworkUrl: buildUrl + "/hexcite-wab.framework.js",
-        codeUrl: buildUrl + "/hexcite-wab.wasm",
+        dataUrl: buildUrl + "/hexcite-wab.data.unityweb",
+        frameworkUrl: buildUrl + "/hexcite-wab.framework.js.unityweb",
+        codeUrl: buildUrl + "/hexcite-wab.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
 
         // If you have a custom web site structure, or want to place multiple Unity build instances on the same page,
@@ -147,41 +146,6 @@ body { background:#000 !important; }
                   unityInstance.SetFullscreen(1);
                 };
 
-                var profile = unityProfiler.createButton(unityInstance);
-                profile.style.marginLeft = '5px';
-                document.querySelector("#unity-build-title").appendChild(profile);
-
-                // Unloading web content from DOM so that browser GC can run can be tricky to get right.
-                // This code snippet shows how to correctly implement a Unity content Unload mechanism to a web page.
-
-                // Unloading Unity content enables a web page to reclaim the memory used by Unity, e.g. for
-                // the purpose of later loading another Unity content instance on the _same_ web page.
-
-                // When using this functionality, take caution to carefully make sure to clear all JavaScript code,
-                // DOM element and event handler references to the old content you may have retained, or
-                // otherwise the browser's garbage collector will be unable to reclaim the old page.
-
-                // N.b. Unity content does _not_ need to be manually unloaded when the user is navigating away from
-                // the current page to another web page. The browser will take care to clear memory of old visited
-                // pages automatically. This functionality is only needed if you want to switch between loading
-                // multiple Unity builds on a single web page.
-                var quit = document.createElement("button");
-                quit.style = "margin-left: 5px; background-color: lightgray; border: none; padding: 5px; cursor: pointer";
-                quit.innerHTML = "Unload";
-                document.querySelector("#unity-build-title").appendChild(quit);
-                quit.onclick = () => {
-                  // Quit Unity application execution
-                  unityInstance.Quit().then(() => {
-                    unityProfiler.shutDown();
-                    // Remove DOM elements from the page so GC can run
-                    document.querySelector("#unity-container").remove();
-                    canvas = null;
-                    fullscreenContainer = null;
-                    // Remover script elements from the page so GC can run
-                    script.remove();
-                    script = null;
-                  });
-                };
               }).catch((message) => {
                 alert(message);
               });
