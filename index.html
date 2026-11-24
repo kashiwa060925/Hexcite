@@ -1,56 +1,47 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<!--
+  SOULS 用の WebGL テンプレート（Unity が Web 書き出しのたびに、これをもとに index.html を作る）。
+  ・読み込み画面のマーク  … TemplateData/yorozuya.png を差し替える
+  ・タブ／ホーム画面のアイコン … TemplateData/favicon.ico・apple-touch-icon.png・icon-192.png・icon-512.png
+  ・見た目（色・大きさ）   … TemplateData/style.css
+  ・ホーム画面に追加したときの名前 … TemplateData/manifest.json
+  三重の波かっこで囲んだ所と、行頭のif文は、Unity が書き出しのときに埋める所なので、消さないこと。
+-->
+<html lang="ja">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>SOULS</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="icon" href="TemplateData/favicon.ico">
+    <link rel="apple-touch-icon" href="TemplateData/apple-touch-icon.png">
+    <link rel="manifest" href="TemplateData/manifest.json">
+    <meta name="theme-color" content="#0b0e1a">
     <link rel="stylesheet" href="TemplateData/style.css">
-  <link rel='icon' href='TemplateData/favicon.ico'>
-<link rel='apple-touch-icon' href='TemplateData/apple-touch-icon.png'>
-<link rel='manifest' href='TemplateData/manifest.json'>
-<meta name='theme-color' content='#0b0e1a'>
-<style id='hexcite-loading'>
-body { background:#000 !important; }
-#unity-canvas { background:#000 !important; }
-#unity-loading-bar { width:min(70vw,560px); opacity:1; transition:opacity .4s ease; z-index:10; }
-#unity-logo { width:100% !important; height:auto !important; aspect-ratio:1311/603; background:transparent url('TemplateData/yorozuya.png') no-repeat center / contain !important; }
-#unity-progress-bar-empty { width:60% !important; height:6px !important; margin:18px auto 0 !important; background:#333 !important; border-radius:3px; overflow:hidden; }
-#unity-progress-bar-full { height:6px !important; margin:0 !important; background:#fff !important; }
-</style>
-</head>
+  </head>
   <body>
-    <div id="unity-container" class="unity-desktop">
-      <div id="unity-fullscreen-container">
-        <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
-        <div id="unity-loading-container">
-          <div id="unity-loading-bar">
-            <div id="unity-logo"></div>
-            <div id="unity-progress-bar-empty">
-              <div id="unity-progress-bar-full"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div id="unity-warning"> </div>
+    <div id="unity-container">
+      <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
       <div id="unity-footer">
-        <div id="unity-logo-title-footer"></div>
-        <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">SOULS（仮）</div>
+        <div id="unity-fullscreen-button" title="全画面"></div>
       </div>
     </div>
+    <div id="unity-loading-bar">
+      <div id="unity-logo"></div>
+      <div id="unity-progress-bar-empty">
+        <div id="unity-progress-bar-full"></div>
+      </div>
+    </div>
+    <div id="unity-warning"></div>
     <script>
-      let canvas = document.querySelector("#unity-canvas");
-      let fullscreenContainer = document.querySelector("#unity-fullscreen-container");
+      var container = document.querySelector("#unity-container");
+      var canvas = document.querySelector("#unity-canvas");
+      var loadingBar = document.querySelector("#unity-loading-bar");
+      var progressBarFull = document.querySelector("#unity-progress-bar-full");
+      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
+      var warningBanner = document.querySelector("#unity-warning");
 
-      // Shows a temporary message banner/ribbon for a few seconds, or
-      // a permanent error message on top of the canvas if type=='error'.
-      // If type=='warning', a yellow highlight color is used.
-      // Modify or remove this function to customize the visually presented
-      // way that non-critical warnings and error messages are presented to the
-      // user.
+      // Unity からの注意・エラーを帯で出す（error は消えない、warning は5秒で消える）
       function unityShowBanner(msg, type) {
-        var warningBanner = document.querySelector("#unity-warning");
         function updateBannerVisibility() {
           warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
         }
@@ -76,101 +67,49 @@ body { background:#000 !important; }
         frameworkUrl: buildUrl + "/Hexcite.framework.js.unityweb",
         codeUrl: buildUrl + "/Hexcite.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
-
-        // If you have a custom web site structure, or want to place multiple Unity build instances on the same page,
-        // you can pass fullscreenElementID: "my-unity-fullscreen-container-id", in this configuration field to
-        // explicitly point to the element tree root that is displayed in fullscreen mode.
-        fullscreenElementID: "unity-fullscreen-container",
-
         companyName: "DefaultCompany",
         productName: "SOULS（仮）",
         productVersion: "0.1.0",
         showBanner: unityShowBanner,
-        // errorHandler: function(err, url, line) {
-        //    alert("error " + err + " occurred at line " + line);
-        //    // Return 'true' if you handled this error and don't want Unity
-        //    // to process it further, 'false' otherwise.
-        //    return true;
-        // },
       };
 
-      // By default, Unity keeps WebGL canvas render target size matched with
-      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
-      // Set this to false if you want to decouple this synchronization from
-      // happening inside the engine, and you would instead like to size up
-      // the canvas DOM size and WebGL render target sizes yourself.
-      // config.matchWebGLToCanvasSize = false;
-
-      // If you would like all file writes inside Unity Application.persistentDataPath
-      // directory to automatically persist so that the contents are remembered when
-      // the user revisits the site the next time, uncomment the following line:
-      // config.autoSyncPersistentDataPath = true;
-      // This autosyncing is currently not the default behavior to avoid regressing
-      // existing user projects that might rely on the earlier manual
-      // JS_FileSystem_Sync() behavior, but in future Unity version, this will be
-      // expected to change.
-
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
-
+        // スマホ：画面いっぱいにする
         var meta = document.createElement('meta');
         meta.name = 'viewport';
         meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
         document.getElementsByTagName('head')[0].appendChild(meta);
-        document.querySelector("#unity-container").className = "unity-mobile";
+        container.className = "unity-mobile";
         canvas.className = "unity-mobile";
-
-        // To lower canvas resolution on mobile devices to gain some
-        // performance, uncomment the following line:
-        // config.devicePixelRatio = 1;
-
-
       } else {
-        // Desktop style: Render the game canvas container in a window that can be maximized to fullscreen:
-        fullscreenContainer.style.width = "960px";
-        fullscreenContainer.style.height = "600px";
+        // パソコン：決めた大きさ
+        canvas.style.width = "960px";
+        canvas.style.height = "600px";
       }
 
+      loadingBar.style.display = "block";
+
+      // 読み込みが終わったら、マークを黒へフェードアウトさせて消す
+      function hideLoading() {
+        loadingBar.style.opacity = "0";
+        setTimeout(function () { loadingBar.style.display = "none"; }, 450);
+      }
 
       var script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
-        const loadingContainer = document.querySelector("#unity-loading-container");
-        const progressBarFull = document.querySelector("#unity-progress-bar-full");
-
         createUnityInstance(canvas, config, (progress) => {
-          if (progress < 1) {
-            loadingContainer.style.display = "block";
-            progressBarFull.style.width = 100 * progress + "%";
-          } else {
-            loadingContainer.style.display = "none";
-          }
+          progressBarFull.style.width = 100 * progress + "%";
         }).then((unityInstance) => {
-                document.querySelector("#unity-fullscreen-button").onclick = () => {
-                  unityInstance.SetFullscreen(1);
-                };
-
-              }).catch((message) => {
-                alert(message);
-              });
-            };
-
+          hideLoading();
+          fullscreenButton.onclick = () => {
+            unityInstance.SetFullscreen(1);
+          };
+        }).catch((message) => {
+          alert(message);
+        });
+      };
       document.body.appendChild(script);
-
     </script>
-  <script>
-(function () {
-  var bar = document.querySelector('#unity-loading-bar'); if (!bar) return;
-  var done = false;
-  var ob = new MutationObserver(function () {
-    if (done || bar.style.display !== 'none') return;
-    done = true; ob.disconnect();
-    bar.style.display = 'block';
-    requestAnimationFrame(function () { bar.style.opacity = '0'; });
-    setTimeout(function () { bar.style.display = 'none'; }, 450);
-  });
-  ob.observe(bar, { attributes: true, attributeFilter: ['style'] });
-})();
-</script>
-</body>
+  </body>
 </html>

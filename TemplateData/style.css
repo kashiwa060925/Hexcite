@@ -1,18 +1,37 @@
-body { padding: 0; margin: 0 }
-#unity-container { position: absolute }
-#unity-container.unity-desktop { left: 50%; top: 50%; transform: translate(-50%, -50%) }
-#unity-container.unity-mobile { position: fixed; width: 100%; height: 100% }
-.unity-mobile #unity-fullscreen-container { width: 100%; height: 100% }
-#unity-fullscreen-container { position: relative; }
-#unity-canvas { position: absolute; width: 100%; height: 100%; background: #231F20 }
-#unity-loading-container { position: absolute; width: 100%; height: 100%; backdrop-filter: blur(5px); display: none; }
-#unity-loading-bar { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
-#unity-logo { width: 154px; height: 130px; background: url('unity-logo-dark.png') no-repeat center }
-#unity-progress-bar-empty { width: 141px; height: 18px; margin-top: 10px; margin-left: 6.5px; background: url('progress-bar-empty-dark.png') no-repeat center }
-#unity-progress-bar-full { width: 0%; height: 18px; margin-top: 10px; background: url('progress-bar-full-dark.png') no-repeat center }
-#unity-footer { position: relative }
-.unity-mobile #unity-footer { display: none }
-#unity-logo-title-footer { float:left; width: 102px; height: 38px; background: url('unity-logo-title-footer.png') no-repeat center }
-#unity-build-title { float: right; margin-right: 10px; line-height: 38px; font-family: arial; font-size: 18px }
-#unity-fullscreen-button { cursor:pointer; float: right; width: 38px; height: 38px; background: url('fullscreen-button.png') no-repeat center }
-#unity-warning { position: absolute; left: 50%; top: 5%; transform: translate(-50%); background: white; padding: 10px; display: none }
+/* SOULS の読み込み画面と、ゲームの枠の見た目。ここを書き換えれば見た目を変えられる */
+html, body { margin: 0; padding: 0; background: #000; }
+body { overflow: hidden; }
+
+/* パソコン：決めた大きさの枠を画面の真ん中に */
+#unity-container { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+#unity-canvas { background: #000; display: block; }
+
+/* スマホ：画面いっぱい */
+#unity-container.unity-mobile { position: fixed; left: 0; top: 0; width: 100%; height: 100%; transform: none; }
+#unity-canvas.unity-mobile { width: 100% !important; height: 100% !important; }
+
+/* 読み込み中：萬屋マークと白いバー（マークの画像は TemplateData/yorozuya.png） */
+#unity-loading-bar {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: min(70vw, 560px); display: none; opacity: 1; transition: opacity .4s ease; z-index: 10;
+}
+#unity-logo {
+  width: 100%; aspect-ratio: 1311 / 603;
+  background: transparent url('yorozuya.png') no-repeat center / contain;
+}
+#unity-progress-bar-empty {
+  width: 60%; height: 6px; margin: 18px auto 0; background: #333; border-radius: 3px; overflow: hidden;
+}
+#unity-progress-bar-full { width: 0%; height: 6px; background: #fff; }
+
+/* エラーや注意の帯（Unityが出す） */
+#unity-warning { position: absolute; left: 50%; top: 5%; transform: translate(-50%); background: white; padding: 10px; display: none; z-index: 20; }
+
+/* パソコンだけ：下の全画面ボタン */
+#unity-footer { position: relative; height: 38px; }
+.unity-mobile #unity-footer { display: none; }
+#unity-fullscreen-button {
+  position: absolute; right: 10px; top: 8px; width: 24px; height: 24px; cursor: pointer;
+  border: 2px solid #888; border-radius: 3px; box-sizing: border-box;
+}
+#unity-fullscreen-button:hover { border-color: #fff; }
